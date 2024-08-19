@@ -47,12 +47,8 @@ app.post('/api/shorturl', function (req, res) {
 });
 
 app.get('/api/shorturl/:short_url', getOgURL, function (req, res) {
-  res.json({ error: res.locals.error })
+  res.json({ error: 'invalid url'})
 }); 
-
-app.listen(port, function() {
-  console.log(`Listening on port ${port}`);
-});
 
 function getOgURL(req, res, next) {
   const shortURL=parseInt(req.params.short_url);
@@ -65,3 +61,8 @@ function getOgURL(req, res, next) {
 
   res.redirect(ogURL)
 }
+
+app.listen(port, function() {
+  console.log(`Listening on port ${port}`);
+});
+
