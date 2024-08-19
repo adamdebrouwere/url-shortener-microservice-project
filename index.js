@@ -3,11 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const res = require('express/lib/response');
 const app = express();
+const bodyParser = require('body-parser');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true}));
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
@@ -23,7 +26,7 @@ app.get('/api/hello', function(req, res) {
 let urlDb = {};
 let urlIdGenerator = 1;
 
-app.post("/api/shorturl", function (req, res) {
+app.post('/api/shorturl', function (req, res) {
 
   const ogURL = req.body.url;
   const shortURL = urlIdGenerator++;
@@ -36,7 +39,22 @@ app.post("/api/shorturl", function (req, res) {
   });
 });
 
-app.get("")
+app.get('/api/shorturl/:short_url', getOgURL, function (req, res) {
+  res.json({ error: res.locals.error })
+}); 
+
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
+
+function getOgURL(req, res, next) {
+  const shortURL=parseInt(req.params.short_url);
+  const ogURL=urlDb[shortURL];
+
+  if(!ogURL) {
+    res.locals.error = "No short URL found"
+    next();
+  } else {
+    res.redirect(ogURL)
+  }
+}
