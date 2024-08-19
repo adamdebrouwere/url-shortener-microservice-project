@@ -4,6 +4,7 @@ const cors = require('cors');
 const res = require('express/lib/response');
 const app = express();
 const bodyParser = require('body-parser');
+const { URL } = REQUIRE('url');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -33,6 +34,12 @@ app.post('/api/shorturl', function (req, res) {
 
   urlDb[shortURL] = ogURL;
 
+  try {
+    newURL(ogURL);
+  } catch (error) {
+    return res.json({ error: 'invalid url'});
+  }
+
   res.json({
     original_url: ogURL,
     short_url: shortURL
@@ -52,7 +59,7 @@ function getOgURL(req, res, next) {
   const ogURL=urlDb[shortURL];
 
   if(!ogURL) {
-    res.locals.error = "No short URL found"
+    res.locals.error = "URL could not be found"
     next();
   } else {
     res.redirect(ogURL)
